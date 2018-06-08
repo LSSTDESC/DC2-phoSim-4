@@ -1,0 +1,8 @@
+## launchSensor.jy
+##
+##  Runs as a jython scriptlet from a Pipeline task
+##
+import os,sys
+from java.util import HashMap
+
+sys.exit(1)
