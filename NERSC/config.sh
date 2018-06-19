@@ -31,7 +31,7 @@ export PHOSIM_IC_GENERATOR='generateInstCat.py'
 # Run 1.2p setup
 export PHOSIM_IC_SETUP='/global/common/software/lsst/cori-haswell-gcc/Run1.2p_setup.bash'
 
-## Dynamic Instance Catalogs...
+## [PRODUCTION] Dynamic Instance Catalogs...
 #
 ### InstanceCatalog generator static options
 
@@ -57,7 +57,7 @@ export PHOSIM_IC_WARNINGS=" --suppress_warnings "
 export DC2_MINSOURCE=100
 
 
-## Static Instance Catalogs...
+## [NON-PRODUCTION] Static Instance Catalogs...
 ## 3/27/2017 - Mustafa's private scratch area for collecting instanceCatalogs
 #export PHOSIM_CATALOGS="/global/cscratch1/sd/mustafa/DC2-phoSim-3"
 ## 11/13/2017 - Test DC2 area for instanceCatalogs

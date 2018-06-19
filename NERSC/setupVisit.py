@@ -447,8 +447,8 @@ opts += ' --sed='+PHOSIM_SEDS+' '
 
 if os.getenv('PHOSIM_E2ADC') == 0:
     opts += ' -e 0 '
-if 'NTHREADS' in os.environ:
-    opts += ' -t '+os.getenv('NTHREADS')
+if 'DC2_NTHREADS' in os.environ:
+    opts += ' -t '+os.getenv('DC2_NTHREADS')
     pass
 cmd += ' '+icScratch+opts
 print 'phoSim command:\n',cmd

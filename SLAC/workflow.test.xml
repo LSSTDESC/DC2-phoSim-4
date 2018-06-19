@@ -4,19 +4,20 @@
           xs:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline 
           http://srs.slac.stanford.edu/Pipeline-II/schemas/2.1/pipeline.xsd">
 
-    <task name="DC2-R1-2p-test-r" type="LSST" version="1.001">
+    <task name="DC2-R2-0p-test-r" type="LSST" version="0.100">
         <notation>Workflow test for DESC DC2 phoSim</notation> 
 
         <variables>
 	    <var name="DC2_FILTER">r</var>
 	    <var name="DC2_FIELD">WFD</var>
+	    <var name="WORKFLOW">DC2-R2-0p</var>
 
-	    <var name="WORKFLOW">DC2-R1-2p</var>
+<!--            <var name="TASKNAME">${WORKFLOW}-${DC2_FIELD}-${DC2_FILTER}</var>         -->
             <var name="TASKNAME">${WORKFLOW}-test-${DC2_FILTER}</var>
 
             <!-- Where/how will jobs be run? 
-              CORI = cori-haswell shared queue
-              CORIP = cori Haswell or KNL via 'pilot' -->
+              CORI  = cori batch via direct SLURM submission
+              CORIP = cori batch via Pilot -->
             <var name="JOBSITE">CORIP</var>
 
             <!-- NERSC locations -->
@@ -28,49 +29,53 @@
             <var name="DC2_OUTPUT">${DC2_ROOT}/output</var>
             <var name="logRoot">${DC2_ROOT}/logs</var>
 
-            <!-- SLAC locations (scriptlets only) -->
+            <!-- SLAC locations (scriptlets only for this task) -->
 	    <var name="DC2_SPATH">/nfs/farm/g/desc/u1/Pipeline-tasks</var>
 	    <var name="DC2_SWORKFLOW">${DC2_SPATH}/${WORKFLOW}</var>
             <var name="DC2_SROOT">${DC2_SPATH}/${TASKNAME}</var>
 
             <var name="DC2_SCONFIGDIR">${DC2_SWORKFLOW}/config</var>
 
-            <!-- SLURM options for NERSC batch (ignored by Pilots) -->
-            <var name="BATCH_QUEUE">shared</var>  <!-- (ignored by Pilots) -->
-            <var name="DC2_QOS">normal</var>          <!-- (ignored by Pilots) -->
-            <var name="DC2_PARTITIONH">${JOBSITE=="CORIP" ? " -p phoSimH " : " -p ${BATCH_QUEUE} | --qos=${DC2_QOS} "}</var>
-            <var name="DC2_PARTITIONK">${JOBSITE=="CORIP" ? " -p phoSimKtest " : " -p ${BATCH_QUEUE} | --qos=${DC2_QOS} "}</var>
+            <!-- Batch options for direct SLURM submission (ignored by Pilots, thus not used in this task) -->
+            <var name="BATCH_QUEUE">regular</var>
+            <var name="DC2_QOS">normal</var>
+            <var name="EXTRA_SETUP">${JOBSITE=="CORIP" ? " " : " -c 3 "}</var> <!-- -c = #CPUs requested -->
+
+	    <!-- Define batch submit variables: either for direct SLURM submission or via Pilot -->
+            <var name="DC2_PARTITIONH1">${JOBSITE=="CORIP" ? " -p phoSimH1 " : " -p ${BATCH_QUEUE} | --qos=${DC2_QOS} "}</var>
+            <var name="DC2_PARTITIONH2">${JOBSITE=="CORIP" ? " -p phoSimH2 " : " -p ${BATCH_QUEUE} | --qos=${DC2_QOS} "}</var>
+            <var name="DC2_PARTITIONK1">${JOBSITE=="CORIP" ? " -p phoSimK1 " : " -p ${BATCH_QUEUE} | --qos=${DC2_QOS} "}</var>
+            <var name="DC2_PARTITIONK2">${JOBSITE=="CORIP" ? " -p phoSimK2 " : " -p ${BATCH_QUEUE} | --qos=${DC2_QOS} "}</var>
+            <var name="DC2_PARTITIONK3">${JOBSITE=="CORIP" ? " -p phoSimK3 " : " -p ${BATCH_QUEUE} | --qos=${DC2_QOS} "}</var>
 
             <var name="BATCH_OPTIONS_H"> -L SCRATCH,projecta | -C haswell </var>
             <var name="BATCH_OPTIONS_K"> -L SCRATCH,projecta | -C knl </var>
 
-            <var name="EXTRA_SETUP">${JOBSITE=="CORIP" ? " " : " -c 3 "}</var>
 
 	    <!-- MAXCPU time in seconds - used for scheduling but not enforced by pilot jobs -->
-            <var name="MAXCPU_SETUP">1800</var>
+            <var name="MAXCPU_SETUP">4200</var>  <!-- This amount of time is needed if generating instanceCatalog -->
             <var name="MAXCPU_TRIM">600</var>
             <var name="MAXCPU_RAYTRACE">12600</var>
-            <!-- Note that native SLURM times are in mm, mm:ss, hh:mm:ss, or dd-hh:mm:ss -->
+            <var name="MAXCPU_E2ADC">1800</var>   
+            <!-- Note that native SLURM times are expressed as: mm, mm:ss, hh:mm:ss, or dd-hh:mm:ss -->
 
 	    <!-- MAXTIME is wall clock time in seconds - used for scheduling but not enforced by pilot jobs -->
-            <var name="MAXTIME_SETUP">1800</var>
-            <var name="MAXTIME_TRIM">600</var>
-            <var name="MAXTIME_RAYTRACE">9000</var>
-            <!-- Note that native SLURM times are in mm, mm:ss, hh:mm:ss, or dd-hh:mm:ss -->
 
 	    <!-- MAXMEM in kB - used for scheduling but not enforced by pilot jobs -->
             <var name="MAXMEM_SETUP">7000000</var>
             <var name="MAXMEM_TRIM">2000000</var>
-            <var name="MAXMEM_RAYTRACE">4000000</var>
+            <var name="MAXMEM_RAYTRACE">3000000</var>
+            <var name="MAXMEM_E2ADC">3000000</var>
 	    <!-- Note that SLURM units are MB -->
 
-            <var name="NTHREADS">8</var>  <!-- number of threads for raytrace -->
+            <var name="DC2_NTHREADS">54</var>         <!-- number of threads requested for raytrace -->
+	    <var name="DC2_CKPT_ENABLE">TRUE</var>    <!-- enable raytrace checkpointing -->
+            <var name="DC2_SIXDIGSTREAM">${format(pipeline.stream,&quot;%06d&quot;)}</var>
 
-            <!-- LSF options for SLAC batch -->
+            <!-- LSF options for SLAC batch (not used in this task) -->
             <var name="MAXCPU">100</var> <!-- wall clock time limit in seconds-->
             <var name="SBATCH_OPTIONS"></var>
 
-            <var name="DC2_SIXDIGSTREAM">${format(pipeline.stream,&quot;%06d&quot;)}</var>
         </variables>
 
 
@@ -78,7 +83,7 @@
           <notation>Setup phoSim inputs and prepare for parallelization</notation>
           <job maxCPU="${MAXCPU_SETUP}" 
 	       maxMemory="${MAXMEM_SETUP}" 
-	       batchOptions="${BATCH_OPTIONS_H} | ${DC2_PARTITIONH} | ${EXTRA_SETUP}" 
+	       batchOptions="${BATCH_OPTIONS_H} | ${DC2_PARTITIONH1} | ${EXTRA_SETUP}" 
                executable="${DC2_CONFIGDIR}/setupVisit.sh"
 	       />
         </process>
@@ -102,7 +107,7 @@ execfile(DC2_SCONFIGDIR+"/launchTrim.jy")
         <process name="finishVisit" site="${JOBSITE}">
           <notation>Setup phoSim inputs and prepare for parallelization</notation>
           <job maxCPU="${MAXCPU}" 
-	       batchOptions="${BATCH_OPTIONS_H} | ${DC2_PARTITIONH}" 
+	       batchOptions="${BATCH_OPTIONS_H} | ${DC2_PARTITIONH2}" 
                executable="${DC2_CONFIGDIR}/finishVisit.sh"
 	       />
           <depends>
@@ -118,7 +123,7 @@ execfile(DC2_SCONFIGDIR+"/launchTrim.jy")
               <notation>Trim instance catalog for this visit</notation>
               <job maxCPU="${MAXCPU_TRIM}" 
 		   maxMemory="${MAXMEM_TRIM}"
-		   batchOptions="${BATCH_OPTIONS_K} | ${DC2_PARTITIONK} | -c 2 " 
+		   batchOptions="${BATCH_OPTIONS_K} | ${DC2_PARTITIONK1} | -c 2 " 
                    executable="${DC2_CONFIGDIR}/runTrim.sh"
 		   />
             </process>
@@ -155,13 +160,26 @@ print 'Dummy scriptlet (allows sub-subtask dependency)'
             <task name="singleSensor" type="LSST">
 
                 <process name="RunRaytrace" site="${JOBSITE}">
-                    <notation>Combined raytrace and e2adc processing steps</notation>
+                    <notation>Raytrace processing step</notation>
                     <job maxCPU="${MAXCPU_RAYTRACE}" 
 			 maxMemory="${MAXMEM_RAYTRACE}"
-                         batchOptions="${BATCH_OPTIONS_K} | ${DC2_PARTITIONK} | -c ${NTHREADS}" 
+                         batchOptions="${BATCH_OPTIONS_K} | ${DC2_PARTITIONK2} | -c ${NTHREADS}" 
                          executable="${DC2_CONFIGDIR}/runRaytrace.sh"
 			 />
                 </process>
+
+
+                <process name="RunE2ADC" site="${JOBSITE}">
+                    <notation>The e2adc processing step</notation>
+                    <job maxCPU="${MAXCPU_E2ADC}" 
+			 maxMemory="${MAXMEM_E2ADC}"
+                         batchOptions="${BATCH_OPTIONS_K} | ${DC2_PARTITIONK3}" 
+                         executable="${DC2_CONFIGDIR}/runE2ADC.sh"
+			 />
+                </process>
+                <depends>
+                    <after process="RunRaytrace" status="SUCCESS"/>
+                </depends>
 
 
                 <process name="RegFiles-jy">
@@ -171,7 +189,7 @@ execfile(DC2_SCONFIGDIR+"/registerDatasets.jy")
                     ]]>
                     </script>
                 <depends>
-                    <after process="RunRaytrace" status="SUCCESS"/>
+                    <after process="RunE2ADC" status="SUCCESS"/>
                 </depends>
                 </process>
 
