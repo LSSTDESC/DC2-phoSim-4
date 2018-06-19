@@ -176,10 +176,10 @@ print 'Dummy scriptlet (allows sub-subtask dependency)'
                          batchOptions="${BATCH_OPTIONS_K} | ${DC2_PARTITIONK3}" 
                          executable="${DC2_CONFIGDIR}/runE2ADC.sh"
 			 />
+                    <depends>
+                      <after process="RunRaytrace" status="SUCCESS"/>
+                    </depends>
                 </process>
-                <depends>
-                    <after process="RunRaytrace" status="SUCCESS"/>
-                </depends>
 
 
                 <process name="RegFiles-jy">
