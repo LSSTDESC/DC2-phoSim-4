@@ -30,14 +30,29 @@ def register():
     ## Prepare to extract and store metadata
     raytraceID = pipeline.getProcessInstance("RunRaytrace")
     raytraceVars = HashMap(raytraceID.getVariables())
-    outputFiles = raytraceVars.get("DC2_OUTPUTLIST")   # list of output data product filenames
+    outputFiles = raytraceVars.get("DC2_OUTPUTLIST")   # list of output data product filenames from raytrace
     outputDir = raytraceVars.get("DC2_OUTPUTDIR")      # directory containing above files
+
+    raytraceID2 = pipeline.getProcessInstance("RunE2ADC")
+    raytraceVars2 = HashMap(raytraceID2.getVariables())
+    outputFiles2 = raytraceVars.get("DC2_OUTPUTLIST2")   # list of output data product filenames from E2ADC
+    outputDir2 = raytraceVars.get("DC2_OUTPUTDIR2")      # directory containing above files
     ## print '2- raytraceVars.keySet() = ',raytraceVars.keySet()
+
+    ## Combine files from raytrace and E2ADC steps
+    if outputDir != outputDir2:
+        print '%ERROR: output directories for raytrace and E2ADC steps are not the same!'
+        print 'raytrace: ',outputDir,', E2ADC: ',outputDir2
+        return 1
+
+    for file in outputFiles2:
+        outputFiles.append(file)
+        pass
 
     if outputFiles is None:
         print "No output files detected."
         return 1
-        pass
+
 
 
     rStream = raytraceID.getStream()

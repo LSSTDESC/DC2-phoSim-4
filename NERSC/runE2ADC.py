@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-## runRaytrace.py - phoSim raytrace step
+## runE2ADC.py - phosim generate "amplifier files" from e-images
 ##
 
 import os,sys,shutil,gzip
 
-print '\n\nWelcome to runRaytrace.py\n========================\n'
+print '\n\nWelcome to runE2ADC.py\n========================\n'
 rc = 0
 
 ## Setup logging, python style
@@ -25,20 +25,20 @@ outList = []         # full final path/filename of data products
 nsnaps = os.getenv('DC2_NSNAP')
 log.info('Number of exposures for this visit: '+nsnaps)
 for snap in range(0,int(nsnaps)):
-    log.info('Start raytrace for exposure '+str(snap))
+    log.info('Start E2ADC for exposure '+str(snap))
 
-    ## phoSim raytrace
-    rc = 0
-    rc = runPhosimStep.runPhosimStep('raytrace',snap)
-    if rc != 0: sys.exit(1)
+    ## ## phoSim raytrace
+    ## rc = 0
+    ## rc = runPhosimStep.runPhosimStep('raytrace',snap)
+    ## if rc != 0: sys.exit(1)
 
-    ## ## phoSim e2adc [optional] <<=== This is now in a separate workflow step
-    ## if os.getenv('PHOSIM_E2ADC') == '1':
-    ##     rc = runPhosimStep.runPhosimStep('e2adc',snap)
-    ##     if rc != 0: sys.exit(1)
-    ## else:
-    ##     log.info('Skipping e2adc step')
-    ##     pass
+    ## phoSim e2adc [optional]
+    if os.getenv('PHOSIM_E2ADC') == '1':
+        rc = runPhosimStep.runPhosimStep('e2adc',snap)
+        if rc != 0: sys.exit(1)
+    else:
+        log.info('Skipping e2adc step')
+        pass
 
     ## Collect phoSim output data product file names
     exposure = "%03d" % snap
@@ -47,29 +47,29 @@ for snap in range(0,int(nsnaps)):
     print 'filename common core1 = ',core1
     print 'filename common core2 = ',core2
 
-    ## Electron file
-    fElectron = 'lsst_e_'+core1+core2+'.fits.gz'
-    print 'fElectron = ',fElectron
-    outputFiles.append(fElectron)
+    ## ## Electron file
+    ## fElectron = 'lsst_e_'+core1+core2+'.fits.gz'
+    ## print 'fElectron = ',fElectron
+    ## outputFiles.append(fElectron)
 
-    ## Centroid file
-    if os.getenv('DC2_CENTROIDFILE') == '1':
-        fCentroid = 'centroid_lsst_e_'+core1+core2+'.txt'
-        print 'fCentroid = ',fCentroid
-        outputFiles.append(fCentroid)
-        pass
-       
-    ## ## Amplifier (e2adc) files
-    ## if os.getenv('PHOSIM_E2ADC') == '1':
-    ##     #log.warning('Harvesting e2adc files not yet supported')
-    ##     for a in range(0,18):
-    ##         if a == 8 or a == 9: continue
-    ##         amp = "_C%0.2i" % a
-    ##         fAmplifier = 'lsst_a_'+core1+amp+core2+'.fits.gz'
-    ##         print 'fAmplifier = ',fAmplifier
-    ##         outputFiles.append(fAmplifier)
-    ##         pass
+    ## ## Centroid file
+    ## if os.getenv('DC2_CENTROIDFILE') == '1':
+    ##     fCentroid = 'centroid_lsst_e_'+core1+core2+'.txt'
+    ##     print 'fCentroid = ',fCentroid
+    ##     outputFiles.append(fCentroid)
     ##     pass
+       
+    ## Amplifier (e2adc) files
+    if os.getenv('PHOSIM_E2ADC') == '1':
+        #log.warning('Harvesting e2adc files not yet supported')
+        for a in range(0,18):
+            if a == 8 or a == 9: continue
+            amp = "_C%0.2i" % a
+            fAmplifier = 'lsst_a_'+core1+amp+core2+'.fits.gz'
+            print 'fAmplifier = ',fAmplifier
+            outputFiles.append(fAmplifier)
+            pass
+        pass
    
 
     ## Copy data products from $SCRATCH to project area
@@ -98,14 +98,14 @@ log.info('Prepare list of files to be registered')
 outlist = ','.join(outputFiles)
 print 'length of outlist = ',len(outlist)
 
-cmd = 'pipelineSet DC2_OUTPUTDIR '+outDir
+cmd = 'pipelineSet DC2_OUTPUTDIR2 '+outDir
 print cmd
 rc = os.system(cmd)
 if rc <> 0 :
     log.error("Unable to set pipeline variable \n $%s",cmd)
     sys.exit(99)
     pass
-cmd = 'pipelineSet DC2_OUTPUTLIST '+outlist
+cmd = 'pipelineSet DC2_OUTPUTLIST2 '+outlist
 print cmd
 rc = os.system(cmd)
 if rc <> 0 :
