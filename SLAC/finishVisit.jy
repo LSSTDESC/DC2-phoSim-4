@@ -1,6 +1,6 @@
-## registerDatasets.jy
+## finishVisit.jy
 ##
-## register data products produced by phoSim in the 'runRaytrace' step of the 'singleSensor' subtask
+## Final bookkeeping for a visit
 ##
 
 ## General note: pipeline variables defined in the .xml are available
@@ -15,16 +15,120 @@ from java.util.regex import Pattern
 import os,sys
 
 
-## metadata
-## everything in instance catalog?
-## parts of command/override file?
-##  visit number (obshistid)
-##  filter
-##
 
 debug = False
 
-def register():
+
+def dumpPipeline():
+    
+    print 'PIPELINE: getProcess = ',pipeline.getProcess()
+    print 'PIPELINE: getStream = ',pipeline.getStream()
+    print 'PIPELINE: getStreamPath = ',pipeline.getStreamPath()
+    print 'PIPELINE: getTask = ',pipeline.getTask()
+    print 'PIPELINE: getTaskVersion = ',pipeline.getTaskVersion()
+    print 'PIPELINE: getTaskVersionPath = ',pipeline.getTaskVersionPath()
+    return 0
+
+def dumpStream(streamID):
+    print 'STREAM ',streamID
+    sID = streamID.getId()
+
+    print 'STREAM ',sID,': getExecutionNumber = ',streamID.getExecutionNumber()
+    print 'STREAM ',sID,': getHasParent = ',streamID.getHasParent()
+    print 'STREAM ',sID,': getId = ',streamID.getId()
+    print 'STREAM ',sID,': getIdPath = ',streamID.getIdPath()
+    nProcInsts = len(streamID.getProcessInstances())
+    print 'STREAM ',sID,': nProcInsts = ',nProcInsts
+    #print 'STREAM ',sID,': getProcessInstances = ',streamID.getProcessInstances()
+    print 'STREAM ',sID,': getStatus = ',streamID.getStatus()
+    nSubStreams = len(streamID.getSubStreams())
+    print 'STREAM ',sID,': nSubStreams = ',nSubStreams
+    
+    #print 'STREAM ',sID,': getSubStreams = ',streamID.getSubStreams()
+    print 'STREAM ',sID,': getTask = ',streamID.getTask()
+    nVars = len(streamID.getVariables())
+    print 'STREAM ',sID,': # variables = ',nVars
+    print 'STREAM ',sID,': getVariables = ',streamID.getVariables()
+    print 'STREAM ',sID,': isLatestExecution = ',streamID.isLatestExecution()
+    return 0
+
+def dumpProcessInstance(piID):
+    print 'PROCESSINST ',piID
+    pName = piID.getProcess().getName()
+    print 'PROCESSINST ',pName,': getStatus = ',piID.getStatus()
+    #print 'PROCESSINST ',pName,': getSubmitDate = ',piID.getSubmitDate
+    #print 'PROCESSINST ',pName,': getStartDate = ',piID.getStartDate
+    nVars = len(piID.getVariables())
+    print 'PROCESSINST ',pName,': nVars = ',nVars
+    print 'PROCESSINST ',pName,': getVariables = ',piID.getVariables()
+    print 'PROCESSINST ',pName,': isFinalStatus = ',piID.isFinalStatus()
+    #print 'PROCESSINST ',pName,': isLatestExecution = ',piID.isLatestExecution
+    return 0
+
+def addMetadata():
+
+    #dumpPipeline()
+
+## Extract pipeline variables from the setupVisit step
+    thisStream = pipeline.getCurrentStream()
+
+    #dumpStream(thisStream)
+
+    #  We want the DC2_SENSORLIST and DC2_SENSORLIST_LEN from all of
+    #  the RunTrim steps in the 'trim' substream
+    #
+
+    # get pointer to 'trim' substream
+    trimIDs = thisStream.getSubStreams('trim')
+    if debug:print 'len(trimIDs) = ',len(trimIDs)
+    ntrim=0
+    totSensors = 0
+    totSensorList = []
+    for trimID in trimIDs:
+        #dumpStream(trimID)
+        runTrimID = trimID.getProcessInstance('RunTrim')
+        nSensors = runTrimID.getVariable('DC2_SENSORLIST_LEN')
+        sensorList = runTrimID.getVariable('DC2_SENSORLIST')
+        #print 'nSensors = ',nSensors
+        #print 'sensorList = ',sensorList
+        totSensors += nSensors
+        #dumpProcessInstance(runTrimID)
+
+        if nSensors > 0:
+            sensorL = sensorList.split(',')
+            totSensorList += sensorL
+            pass
+        #print ntrim
+        ntrim += 1
+        pass
+
+    print 'totSensors = ',totSensors
+    print 'totSensorList = ',totSensorList
+
+    if len(totSensorList) > 0:
+        tSensorList = totSensorList[0]
+        for sid in range(1,len(totSensorList)):
+            tSensorList += ","+totSensorList[sid]
+            pass
+        pass
+
+    print 'tSensorList = ',tSensorList
+
+
+
+    ## At this point we need to decide what to do with these data: 1)
+    ## pipeline variable(s); 2) dataCatalog metadata; 3) small text
+    ## file.....???
+
+    
+    return 0
+
+
+
+
+
+
+    ###########  WARNING:  OLD STUFF BELOW  ############   
 
     if debug:print '1- DC2_SENSORID = ',DC2_SENSORID
 
@@ -159,16 +263,7 @@ def register():
 
 
 if __name__ == "__main__":
-    rc = register()
-    print 'Return from register = ',rc
-    sys.exit(rc)
 
-    '''
-    public NewDataset newDataset(String name,
-                    String fileFormat,
-                    String dataType,
-                    String logicalFolderPath,
-                    String groupName,
-                    String site,
-                    String location)
-                    '''
+    rc = addMetadata()
+    print 'Return from finishVisit-jy = ',rc
+    sys.exit(rc)

@@ -4,7 +4,7 @@
           xs:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline 
           http://srs.slac.stanford.edu/Pipeline-II/schemas/2.1/pipeline.xsd">
 
-    <task name="DC2-R2-0p-test-r" type="LSST" version="0.100">
+    <task name="DC2-R2-0p-test-r" type="LSST" version="0.120">
         <notation>Workflow test for DESC DC2 phoSim</notation> 
 
         <variables>
@@ -104,18 +104,31 @@ execfile(DC2_SCONFIGDIR+"/launchTrim.jy")
         </process>
 
 
-        <process name="finishVisit" site="${JOBSITE}">
-          <notation>Setup phoSim inputs and prepare for parallelization</notation>
-          <job maxCPU="${MAXCPU}" 
-	       batchOptions="${BATCH_OPTIONS_H} | ${DC2_PARTITIONH2}" 
-               executable="${DC2_CONFIGDIR}/finishVisit.sh"
-	       />
+        <process name="finishVisit-jy">
+          <notation>Last minute bookkeeping</notation>
+          <script><![CDATA[ 
+execfile(DC2_SCONFIGDIR+"/finishVisit.jy")
+              ]]>
+          </script>
           <depends>
             <after process="trim.trimDone-jy" status="SUCCESS"/>
           </depends>
         </process>
 
 
+        <process name="finishVisit" site="${JOBSITE}">
+          <notation>Final statistics and cleanup</notation>
+          <job maxCPU="${MAXCPU}" 
+	       batchOptions="${BATCH_OPTIONS_H} | ${DC2_PARTITIONH2}" 
+               executable="${DC2_CONFIGDIR}/finishVisit.sh"
+	       />
+          <depends>
+            <after process="finishVisit-jy" status="SUCCESS"/>
+          </depends>
+        </process>
+
+
+<!-- TRIM subtask -------------------------------------------------------->
 
         <task name="trim" type="LSST">
 
@@ -157,13 +170,16 @@ print 'Dummy scriptlet (allows sub-subtask dependency)'
             </process>
 
 
+<!-- SENSOR sub-subtask -------------------------------------------------------->
+
+
             <task name="singleSensor" type="LSST">
 
                 <process name="RunRaytrace" site="${JOBSITE}">
                     <notation>Raytrace processing step</notation>
                     <job maxCPU="${MAXCPU_RAYTRACE}" 
 			 maxMemory="${MAXMEM_RAYTRACE}"
-                         batchOptions="${BATCH_OPTIONS_K} | ${DC2_PARTITIONK2} | -c ${NTHREADS}" 
+                         batchOptions="${BATCH_OPTIONS_K} | ${DC2_PARTITIONK2} | -c ${DC2_NTHREADS}" 
                          executable="${DC2_CONFIGDIR}/runRaytrace.sh"
 			 />
                 </process>
