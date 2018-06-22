@@ -15,6 +15,7 @@ def bye(rc):
 print '\n\nWelcome to setupVisit.py\n========================\n'
 rc = 0
 
+timecmd = 'usr/bin/time -v '
 
 ## Setup logging, python style
 import logging as log
@@ -231,6 +232,7 @@ elif os.getenv('PHOSIM_IC_GEN') == 'DYNAMIC':
     cmd += opts
     opts = ' --ids '+visitID
     cmd += opts
+    cmd = timecmd+cmd
     log.info('Generate instanceCatalog.')
     print '\n$ ',cmd
 
@@ -453,8 +455,7 @@ if 'DC2_NTHREADS' in os.environ:
 cmd += ' '+icScratch+opts
 print 'phoSim command:\n',cmd
 
-timecmd = 'usr/bin/time -v '
-cmd += timecmd
+cmd = timecmd+cmd
 print 'phoSim command+:\n',cmd
 
 print

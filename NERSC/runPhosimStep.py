@@ -107,7 +107,7 @@ def runPhosimStep(step,snap=0):
     print 'cmd = ',cmd
 
     timecmd = '/usr/bin/time -v '
-    cmd =+ timecmd
+    cmd = timecmd+cmd
     print 'cmd+ = ',cmd
 
 
