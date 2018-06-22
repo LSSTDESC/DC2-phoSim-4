@@ -452,6 +452,11 @@ if 'DC2_NTHREADS' in os.environ:
     pass
 cmd += ' '+icScratch+opts
 print 'phoSim command:\n',cmd
+
+timecmd = 'usr/bin/time -v '
+cmd += timecmd
+print 'phoSim command+:\n',cmd
+
 print
 sys.stdout.flush()
 rc = os.system(cmd)

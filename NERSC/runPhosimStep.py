@@ -106,6 +106,11 @@ def runPhosimStep(step,snap=0):
     cmd = jobParms['executable']+' < '+jobParms['Input']
     print 'cmd = ',cmd
 
+    timecmd = '/usr/bin/time -v '
+    cmd =+ timecmd
+    print 'cmd+ = ',cmd
+
+
     sys.stdout.flush()
     rc = os.system(cmd)
     sys.stdout.flush()
