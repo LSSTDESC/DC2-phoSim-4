@@ -25,11 +25,11 @@ printenv PYTHONPATH
 export HDF5_USE_FILE_LOCKING=FALSE
 
 ## Display the IC generator options (incl. default values)
-echo "$ "/usr/bin/time ${PHOSIM_IC_GENERATOR} -h
-/usr/bin/time ${PHOSIM_IC_GENERATOR} -h
+echo "$ "${PHOSIM_IC_GENERATOR} -h
+${PHOSIM_IC_GENERATOR} -h
 
 ## Construct the generateIC command with static options (in config.sh) plus dynamic options passed by setupVisit.py
-cmd='/usr/bin/time '${PHOSIM_IC_GENERATOR}
+cmd='/usr/bin/time -v '${PHOSIM_IC_GENERATOR}
 cmd="$cmd ${PHOSIM_IC_OPSSIM_DB}"
 cmd="$cmd ${PHOSIM_IC_AGN_DB}"
 cmd="$cmd ${PHOSIM_IC_DESCQA_CAT}"

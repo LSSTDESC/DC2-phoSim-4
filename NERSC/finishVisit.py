@@ -4,7 +4,7 @@
 
 import os,sys,shutil
 
-print '\n\nWelcome to finishVisit.py\n========================\n'
+print('\n\nWelcome to finishVisit.py\n========================\n')
 rc = 0
 
 ## Setup logging, python style

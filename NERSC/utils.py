@@ -31,20 +31,20 @@ def dm2phosim(chipID):
 
 def getVisit(stream, visitFile):
 
-    print "\n================================================="
-    print 'Entering getVisit:\n   stream ',stream,'\n   visitFile ',visitFile
+    print("\n=================================================")
+    print('Entering getVisit:\n   stream ',stream,'\n   visitFile ',visitFile)
 
     # Open & read visit list
     fd = open(visitFile,'r')
     vList = fd.readlines()
     fd.close()
 
-    print "     visit file contains ",len(vList)," visits."
+    print("     visit file contains ",len(vList)," visits.")
 
     # Select visit number (obsHistID) index by stream #
     obsHistID = vList[stream].split()[0]
-    print "     stream ",stream,' corresponds to visit (obsHistID) = ',obsHistID
-    print "=================================================\n"
+    print("     stream ",stream,' corresponds to visit (obsHistID) = ',obsHistID)
+    print("=================================================\n")
     # Return obsHistID
     return obsHistID
 

@@ -7,6 +7,10 @@ echo "Entering config.sh "
 echo "------------------"
 date
 echo
+
+## Python3
+module load python/3.6-anaconda-4.4
+
 ## Git repository containing visit lists and instanceCatalog generator
 export DC2_REPO='/global/common/software/lsst/cori-haswell-gcc/DC2_Repo/DC2_Repo'
 

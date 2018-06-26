@@ -4,7 +4,7 @@
 
 import os,sys,shutil,gzip
 
-print '\n\nWelcome to runRaytrace.py\n========================\n'
+print('\n\nWelcome to runRaytrace.py\n========================\n')
 rc = 0
 
 ## Setup logging, python style
@@ -44,18 +44,18 @@ for snap in range(0,int(nsnaps)):
     exposure = "%03d" % snap
     core1 = os.getenv('DC2_OBSHISTID')+'_f'+os.getenv('DC2_FILTER_NUM')+'_'+os.getenv('DC2_SENSORID')
     core2 = '_E'+exposure
-    print 'filename common core1 = ',core1
-    print 'filename common core2 = ',core2
+    print('filename common core1 = ',core1)
+    print('filename common core2 = ',core2)
 
     ## Electron file
     fElectron = 'lsst_e_'+core1+core2+'.fits.gz'
-    print 'fElectron = ',fElectron
+    print('fElectron = ',fElectron)
     outputFiles.append(fElectron)
 
     ## Centroid file
     if os.getenv('DC2_CENTROIDFILE') == '1':
         fCentroid = 'centroid_lsst_e_'+core1+core2+'.txt'
-        print 'fCentroid = ',fCentroid
+        print('fCentroid = ',fCentroid)
         outputFiles.append(fCentroid)
         pass
        
@@ -76,9 +76,9 @@ for snap in range(0,int(nsnaps)):
     log.info('Copy data products from $SCRATCH to project area')
     sixdigits = "%06d" % int(os.getenv('DC2_TOPLEVEL6'))
     workDir = os.path.join(os.getenv('PHOSIM_SCR_ROOT'),sixdigits,'work')
-    print 'workDir = ',workDir
+    print('workDir = ',workDir)
     outDir = os.getenv('DC2_PHOSIMOUT')
-    print 'outDir = ',outDir
+    print('outDir = ',outDir)
     for filename in outputFiles:
         ifile = os.path.join(workDir,filename)
         ofile = os.path.join(outDir,filename)
@@ -96,19 +96,19 @@ for snap in range(0,int(nsnaps)):
 ## Send list of output files to workflow engine for subsequent registration
 log.info('Prepare list of files to be registered')
 outlist = ','.join(outputFiles)
-print 'length of outlist = ',len(outlist)
+print('length of outlist = ',len(outlist))
 
 cmd = 'pipelineSet DC2_OUTPUTDIR '+outDir
-print cmd
+print(cmd)
 rc = os.system(cmd)
-if rc <> 0 :
+if rc != 0 :
     log.error("Unable to set pipeline variable \n $%s",cmd)
     sys.exit(99)
     pass
 cmd = 'pipelineSet DC2_OUTPUTLIST '+outlist
-print cmd
+print(cmd)
 rc = os.system(cmd)
-if rc <> 0 :
+if rc != 0 :
     log.error("Unable to set pipeline variable \n $%s",cmd)
     sys.exit(99)
     pass

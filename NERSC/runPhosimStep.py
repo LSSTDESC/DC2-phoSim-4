@@ -28,17 +28,17 @@ def runPhosimStep(step,snap=0):
         pass
     
     parFileName = subFileName+'.pars'
-    print 'parFileName = ',parFileName
+    print('parFileName = ',parFileName)
         
     subFileName += '.submit'
-    print 'subFileName = ', subFileName
+    print('subFileName = ', subFileName)
     
     sixdigits = "%06d" % int(os.getenv('DC2_TOPLEVEL6'))
     workDir = os.path.join(os.getenv('PHOSIM_SCR_ROOT'),sixdigits,'work')
-    print 'workDir = ',workDir
+    print('workDir = ',workDir)
 
     sf = os.path.join(workDir,subFileName)
-    print 'submitFile = ',sf
+    print('submitFile = ',sf)
 
     if not os.access(sf,os.R_OK):
         log.error('Cannot access .submit file for this trim job: '+sf)
@@ -56,19 +56,19 @@ def runPhosimStep(step,snap=0):
         for line in sfp:
             if line.find('=') != -1:
                 nlines += 1
-                print line.strip()
+                print(line.strip())
                 foo = line.split('=')
                 mykey = foo[0].strip()
                 jobParms[mykey] = foo[1].strip()
                 if mykey == 'executable':
                     jobParms[mykey]=os.path.join(os.environ['PHOSIM_ROOT'],jobParms[mykey].split('/')[-2],jobParms[mykey].split('/')[-1])
-                    print '--Overriding "executable" with:'
-                    print mykey,' = ',jobParms[mykey]
+                    print('--Overriding "executable" with:')
+                    print(mykey,' = ',jobParms[mykey])
                 pass
             pass
         pass
-    print '----------------------------------------\n# useful lines in submit file = ',nlines
-    print 'jobParms = ',jobParms
+    print('----------------------------------------\n# useful lines in submit file = ',nlines)
+    print('jobParms = ',jobParms)
 
 ## Switch to phoSim work directory for remaining steps
     os.chdir(jobParms['initialdir'])
@@ -76,7 +76,7 @@ def runPhosimStep(step,snap=0):
 ## append trimcatalog for this sensor to the end of the raytrace .pars file (but only once)
     if step=='raytrace':
         trimcatFileName = 'trimcatalog_'+os.getenv('DC2_OBSHISTID')+'_'+os.getenv('DC2_SENSORID')+'.pars'
-        print 'trimcatFileName = ',trimcatFileName
+        print('trimcatFileName = ',trimcatFileName)
 
         ## Check if trimmed catalog already appended to raytrace .pars file
         trimmed = False
@@ -91,9 +91,9 @@ def runPhosimStep(step,snap=0):
         if not trimmed:
             log.info('Append trimcatalog to end of raytrace .pars file')
             cmd = 'cat '+trimcatFileName+' >> '+parFileName
-            print cmd
+            print(cmd)
             rc = os.system(cmd)
-            if rc <> 0:
+            if rc != 0:
                 log.error('Failure to concatenate trimcat to raytrace .pars file')
                 sys.exit(1)
                 pass
@@ -104,11 +104,11 @@ def runPhosimStep(step,snap=0):
     log.info('Construct command and execute')
     #cmd = 'cat '+jobParms['Input']+' | '+jobParms['executable']
     cmd = jobParms['executable']+' < '+jobParms['Input']
-    print 'cmd = ',cmd
+    print('cmd = ',cmd)
 
     timecmd = '/usr/bin/time -v '
     cmd = timecmd+cmd
-    print 'cmd+ = ',cmd
+    print('cmd+ = ',cmd)
 
 
     sys.stdout.flush()

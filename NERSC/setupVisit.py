@@ -5,17 +5,17 @@
 import os,sys,shutil,gzip
 
 def bye(rc):
-    print "\n\n\n"
-    print "Debug exit from setupVisit.py"
-    print "\n\n\n"
+    print("\n\n\n")
+    print("Debug exit from setupVisit.py")
+    print("\n\n\n")
     sys.exit(rc)
     pass
 
 
-print '\n\nWelcome to setupVisit.py\n========================\n'
+print('\n\nWelcome to setupVisit.py\n========================\n')
 rc = 0
 
-timecmd = 'usr/bin/time -v '
+timecmd = '/usr/bin/time -v '
 
 ## Setup logging, python style
 import logging as log
@@ -32,7 +32,7 @@ log.info("Starting stream %s",sstream)
 ## Preserve 6-digit top-level stream number
 cmd = 'pipelineSet DC2_TOPLEVEL6 '+sstream
 rc = os.system(cmd)
-if rc <> 0 :
+if rc != 0 :
     log.error("Unable to set pipeline variable")
     sys.exit(99)
     pass
@@ -115,9 +115,9 @@ else:                                                      ## YES
 
 ## Pass along the path to the output directory
 cmd = 'pipelineSet DC2_PHOSIMOUT '+outDir
-print cmd
+print(cmd)
 rc = os.system(cmd)
-if rc <> 0 :
+if rc != 0 :
     log.error("Unable to set pipeline variable \n $%s",cmd)
     sys.exit(99)
     pass
@@ -140,9 +140,9 @@ os.makedirs(scr_work,filePermissions)
 os.makedirs(scr_output,filePermissions)
 
 cmd = 'pipelineSet DC2_SCR_PHOSIMOUT '+scrDir
-print cmd
+print(cmd)
 rc = os.system(cmd)
-if rc <> 0 :
+if rc != 0 :
     log.error("Unable to set pipeline variable \n $%s",cmd)
     sys.exit(99)
     pass
@@ -168,9 +168,9 @@ sensorList = list(focalPlane)        # start off assuming we simulate the entire
 visitID = str(getVisit(stream,visitFile))
 
 if len(sensorList) > 0:
-    print 'sensorList[',len(sensorList),'] = ',sensorList
+    print('sensorList[',len(sensorList),'] = ',sensorList)
 else:
-    print 'sensorList will be created after phoSim trim completes'
+    print('sensorList will be created after phoSim trim completes')
     pass
 
 
@@ -184,15 +184,15 @@ else:
     sl1 = ','.join(sensorList[:100])
     sl2 = ','.join(sensorList[100:])
     pass
-print 'sensor list part 1 = ',sl1
-print 'sensor list part 2 = ',sl2
+print('sensor list part 1 = ',sl1)
+print('sensor list part 2 = ',sl2)
 cmd = 'pipelineSet DC2_SENSORLIST_1 '+sl1
 rc1 = os.system(cmd)
 cmd = 'pipelineSet DC2_SENSORLIST_2 '+sl2
 rc2 = os.system(cmd)
 cmd = 'pipelineSet DC2_NUM_SENSORS '+str(len(sensorList))
 rc3 = os.system(cmd)
-if rc1 <> 0 or rc2 <> 0 or rc3 <> 0:
+if rc1 != 0 or rc2 != 0 or rc3 != 0:
     log.error("Unable to set pipeline variable")
     sys.exit(99)
     pass
@@ -207,25 +207,25 @@ if rc1 <> 0 or rc2 <> 0 or rc3 <> 0:
 
 
 icName = 'phosim_cat_'+visitID+'.txt'
-print 'icName = ',icName
+print('icName = ',icName)
 
 if os.getenv('PHOSIM_IC_GEN') == 'STATIC':
-    print '\nUsing statically generated instance catalog'
+    print('\nUsing statically generated instance catalog')
     icDir = os.getenv('PHOSIM_CATALOGS')+'/'+visitID
-    print 'icDir    = ',icDir
+    print('icDir    = ',icDir)
     icSelect = os.path.join(icDir,icName)
-    print 'icSelect = ',icSelect
+    print('icSelect = ',icSelect)
     
 elif os.getenv('PHOSIM_IC_GEN') == 'DYNAMIC':
-    print '\nUsing dymanically generated instance catalog'
+    print('\nUsing dymanically generated instance catalog')
 
     cmd = os.path.join(os.getenv('DC2_CONFIGDIR'),'genIC.sh')
-    print 'cmd = ',cmd
+    print('cmd = ',cmd)
 
     icDir = os.path.join(scrDir,'instCat')
-    print 'icDir    = ',icDir
+    print('icDir    = ',icDir)
     icSelect = os.path.join(icDir,icName)
-    print 'icSelect = ',icSelect
+    print('icSelect = ',icSelect)
 
     ## The options specified below are not known until runtime, all others are in config.sh
     opts = ' --out_dir '+icDir
@@ -234,13 +234,13 @@ elif os.getenv('PHOSIM_IC_GEN') == 'DYNAMIC':
     cmd += opts
     cmd = timecmd+cmd
     log.info('Generate instanceCatalog.')
-    print '\n$ ',cmd
+    print('\n$ ',cmd)
 
     sys.stdout.flush()
     rc = os.system(cmd)
     sys.stdout.flush()
     log.info('Return from generateDc1InstCat, rc= '+str(rc))
-    if rc <> 0:
+    if rc != 0:
         log.error('Failed to generate instance catalog.')
         sys.exit(1)
         pass
@@ -248,7 +248,7 @@ elif os.getenv('PHOSIM_IC_GEN') == 'DYNAMIC':
     # Check that instanceCatalog was produced as expected
     if not os.path.isfile(icSelect):
         log.error('Expected IC file not produced')
-        print icSelect
+        print(icSelect)
         sys.exit(1)
         pass
 
@@ -258,7 +258,7 @@ elif os.getenv('PHOSIM_IC_GEN') == 'DYNAMIC':
 ## Preserve the instance catalog info for subsequent processing steps
 cmd = 'pipelineSet DC2_INSTANCE_CATALOG '+icSelect
 rc = os.system(cmd)
-if rc <> 0 :
+if rc != 0 :
     log.error("Unable to set pipeline variable")
     sys.exit(99)
     pass
@@ -274,7 +274,7 @@ cfilter = None
 cfilterNum = None
 minsource = None
 filterList = os.getenv("DC2_FILTER_LIST").split()
-print 'filterList = ',filterList
+print('filterList = ',filterList)
 log.info('Content of top-level instanceCatalog:')
 with open(icScratch,'r') as fp:
     for line in fp:
@@ -289,52 +289,52 @@ with open(icScratch,'r') as fp:
             cfilterNum = entry[1]
             pass
         if entry[0] == 'minsource':minsource = entry[1]
-        print entry[0],' ',entry[1]
+        print(entry[0],' ',entry[1])
         nic =+ 1
         pass
     pass
 
-print '\n============================='
-print 'visit (obshistid) = ',visit
-print 'nsnap = ',nsnap
-print 'filter = ',cfilter
-print 'filter# = ',cfilterNum
-print 'minsource = ',minsource
-print '=============================\n'
+print('\n=============================')
+print('visit (obshistid) = ',visit)
+print('nsnap = ',nsnap)
+print('filter = ',cfilter)
+print('filter# = ',cfilterNum)
+print('minsource = ',minsource)
+print('=============================\n')
 
 ## Pass filter, nsnap and obshistid to workflow engine for subsequent steps
 cmd = 'pipelineSet DC2_NSNAP '+nsnap
-print cmd
+print(cmd)
 rc = os.system(cmd)
-if rc <> 0 :
+if rc != 0 :
     log.error("Unable to set pipeline variable \n $%s",cmd)
     sys.exit(99)
     pass
 cmd = 'pipelineSet DC2_OBSHISTID '+visit
-print cmd
+print(cmd)
 rc = os.system(cmd)
-if rc <> 0 :
+if rc != 0 :
     log.error("Unable to set pipeline variable \n $%s",cmd)
     sys.exit(99)
     pass
 cmd = 'pipelineSet DC2_FILTER '+cfilter
-print cmd
+print(cmd)
 rc = os.system(cmd)
-if rc <> 0 :
+if rc != 0 :
     log.error("Unable to set pipeline variable \n $%s",cmd)
     sys.exit(99)
     pass
 cmd = 'pipelineSet DC2_FILTER_NUM '+cfilterNum
-print cmd
+print(cmd)
 rc = os.system(cmd)
-if rc <> 0 :
+if rc != 0 :
     log.error("Unable to set pipeline variable \n $%s",cmd)
     sys.exit(99)
     pass
 cmd = 'pipelineSet DC2_MINSOURCE '+minsource
-print cmd
+print(cmd)
 rc = os.system(cmd)
-if rc <> 0 :
+if rc != 0 :
     log.error("Unable to set pipeline variable \n $%s",cmd)
     sys.exit(99)
     pass
@@ -359,14 +359,14 @@ sys.stdout.flush()
 cf = {}
 with open(cfScratch,'r') as fp:
     for line in fp:
-        print line.strip()
+        print(line.strip())
         if len(line.strip()) == 0 or line.startswith('#'):continue
         entry=line.strip().split()
         cf[entry[0]] = None
         if len(entry) > 1: cf[entry[0]] = ' '.join(entry[1:])
         pass
     pass
-print '==========================================\n\n\n'
+print('==========================================\n\n\n')
 
 ## Check if a centroid file is requested
 centroidfile = '0'
@@ -378,7 +378,7 @@ if 'centroidfile' in cf:
 
 cmd = 'pipelineSet DC2_CENTROIDFILE '+centroidfile
 rc = os.system(cmd)
-if rc <> 0 :
+if rc != 0 :
     log.error("Unable to set pipeline variable \n $%s",cmd)
     sys.exit(99)
     pass
@@ -390,7 +390,7 @@ if rc <> 0 :
 ## Create a sym-link mirror of the built-in SED files
 ######################################################
 
-print '\n\n===================================================================='
+print('\n\n====================================================================')
 log.info('Build SED files sym-link directory')
 SOURCE = os.path.join(os.getenv('PHOSIM_ROOT'),'data/SEDs')
 DESTINATION = os.path.join(scrDir,'SEDs')
@@ -398,7 +398,7 @@ DESTINATION = os.path.join(scrDir,'SEDs')
 PHOSIM_SEDS = DESTINATION
 cmd = "cp -as "+SOURCE+" "+DESTINATION
 log.info("Executing command...")
-print cmd
+print(cmd)
 rc = os.system(cmd)
 if rc != 0:
     log.error("Command failed, aborting...")
@@ -412,7 +412,7 @@ SOURCE = os.path.join(icDir,"Dynamic")
 DESTINATION = PHOSIM_SEDS
 cmd = 'ln -s '+SOURCE+' '+DESTINATION
 log.info("Executing command...")
-print cmd
+print(cmd)
 rc = os.system(cmd)
 if rc != 0:
     log.error("Command failed, aborting...")
@@ -434,9 +434,12 @@ if rc != 0:
 
 
 ## Run first part of phoSim, preparation for downstream trim/raytrace/e2adc
-print '\n\n===================================================================='
+print('\n\n====================================================================')
 log.info('Run phoSim (part I)')
 cmd = os.path.join(os.getenv('PHOSIM_ROOT'),'phosim.py')
+
+# The following is to enforce python2 (at NERSC)
+cmd = '/usr/bin/python '+cmd
 
 ## Global phoSim options
 ##   -g condor causes batch files to be created for trim/raytrace/e2adc steps
@@ -453,12 +456,12 @@ if 'DC2_NTHREADS' in os.environ:
     opts += ' -t '+os.getenv('DC2_NTHREADS')
     pass
 cmd += ' '+icScratch+opts
-print 'phoSim command:\n',cmd
+print('phoSim command:\n',cmd)
 
 cmd = timecmd+cmd
-print 'phoSim command+:\n',cmd
+print('phoSim command+:\n',cmd)
 
-print
+print()
 sys.stdout.flush()
 rc = os.system(cmd)
 
@@ -495,7 +498,7 @@ log.info('There are '+str(ntrim)+ ' trim jobs to perform.')
 ## Pass ntrim to workflow engine for subsequent step
 cmd = 'pipelineSet DC2_NTRIMS '+str(ntrim)
 rc = os.system(cmd)
-if rc <> 0 :
+if rc != 0 :
     log.error("Unable to set pipeline variable \n $%s",cmd)
     sys.exit(99)
     pass
