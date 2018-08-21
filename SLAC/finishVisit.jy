@@ -1,6 +1,7 @@
 ## finishVisit.jy
 ##
-## Final bookkeeping for a visit
+## Final bookkeeping for a visit - add metadata to dataCatalog that is
+## only known at this step in the operation
 ##
 
 ## General note: pipeline variables defined in the .xml are available
@@ -65,14 +66,23 @@ def dumpProcessInstance(piID):
     #print 'PROCESSINST ',pName,': isLatestExecution = ',piID.isLatestExecution
     return 0
 
+
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+
+
+
 def addMetadata():
 
     #dumpPipeline()
 
 ## Extract pipeline variables from the setupVisit step
     thisStream = pipeline.getCurrentStream()
-
     #dumpStream(thisStream)
+
 
     #  We want the DC2_SENSORLIST and DC2_SENSORLIST_LEN from all of
     #  the RunTrim steps in the 'trim' substream
@@ -105,6 +115,7 @@ def addMetadata():
     print 'totSensors = ',totSensors
     print 'totSensorList = ',totSensorList
 
+    tSensorList = ''
     if len(totSensorList) > 0:
         tSensorList = totSensorList[0]
         for sid in range(1,len(totSensorList)):
@@ -116,150 +127,44 @@ def addMetadata():
 
 
 
-    ## At this point we need to decide what to do with these data: 1)
-    ## pipeline variable(s); 2) dataCatalog metadata; 3) small text
-    ## file.....???
-
+    ###################################################################################
+    ####  Add simulated sensor list to dataCatalog metadata
+    ###################################################################################
     
-    return 0
 
+    ## Construct dataCatalog path (including 'group'): /LSST-DESC/DC2/<taskName>/<obsHistID>
 
+    # Get the obsHistID (used as dataCat group name)
+    setupID = thisStream.getProcessInstance('setupVisit')
+    obsHistID = setupID.getVariable("DC2_OBSHISTID")
+    if debug:print 'obsHistID = ',obsHistID
 
+    # Get name of this task
+    thisTask = pipeline.getCurrentTask()
+    taskName = thisTask.getName()
+    print 'taskName = ',taskName
 
+    dataCatPath = '/LSST-DESC/DC2/'+taskName+'/'+str(obsHistID)
+    print 'dataCatPath = ',dataCatPath
 
+    ## Find dataCat group in which to add metadata
+    dcGroup = datacatalog.getDatasetGroup(dataCatPath)
+    print 'dcGroup = ',dcGroup
 
-    ###########  WARNING:  OLD STUFF BELOW  ############   
-
-    if debug:print '1- DC2_SENSORID = ',DC2_SENSORID
-
-    ## Prepare to extract and store metadata
-    raytraceID = pipeline.getProcessInstance("RunRaytrace")
-    raytraceVars = HashMap(raytraceID.getVariables())
-    outputFiles = raytraceVars.get("DC2_OUTPUTLIST")   # list of output data product filenames from raytrace
-    outputDir = raytraceVars.get("DC2_OUTPUTDIR")      # directory containing above files
-
-    raytraceID2 = pipeline.getProcessInstance("RunE2ADC")
-    raytraceVars2 = HashMap(raytraceID2.getVariables())
-    outputFiles2 = raytraceVars2.get("DC2_OUTPUTLIST2")   # list of output data product filenames from E2ADC
-    outputDir2 = raytraceVars2.get("DC2_OUTPUTDIR2")      # directory containing above files
-    if debug:print '2- raytraceVars.keySet() = ',raytraceVars.keySet()
-    if debug:print '2- raytraceVars2.keySet() = ',raytraceVars2.keySet()
-
-    ## Combine files from raytrace and E2ADC steps
-    if outputDir != outputDir2:
-        print '%ERROR: output directories for raytrace and E2ADC steps are not the same!'
-        print 'raytrace: ',outputDir,', E2ADC: ',outputDir2
-        return 1
-
-    outputFiles = outputFiles+','+outputFiles2
-
-    if debug:print '2a - outputFiles = ',outputFiles
-
-    if outputFiles is None:
-        print "No output files reported."
-        return 1
-
-
-
-    rStream = raytraceID.getStream()
-    pStream = rStream.getParentStream()
-    trimID = pStream.getProcessInstance("RunTrim")
-    trimVars = HashMap(trimID.getVariables())
-    if debug:print '3- trimVars.keySet() = ',trimVars.keySet()
-
-
-    tStream = pStream.getParentStream()
-    setupID = tStream.getProcessInstance("setupVisit")
-    setupVars = HashMap(setupID.getVariables())
-    if debug:print '4- setupVars.keySet() = ',setupVars.keySet()
-    sys.stdout.flush()
-
-
-    ## These data come from env-vars in the processing step
-    #outputDir = DC2_OUTPUT                             # NERSC directory containing output data products
-    obsHistID = setupVars.get("DC2_OBSHISTID")         # visit ID
-    sensorID = DC2_SENSORID                            # sensor ID
-    filterID = setupVars.get("DC2_FILTER_NUM")         # filter # (012345 -> ugrizy)
-    filter = setupVars.get("DC2_FILTER")               # filter
-
-    taskVersionPath = pipeline.getTaskVersionPath()     # bookkeeping (taskname, etc.)
-    task = taskVersionPath.split("(")[0]
-    taskVersion = taskVersionPath.split('/')[0]
-    streamPath = pipeline.getStreamPath()               # bookkeeping (stream hierarchy)
-
-
-    ## print '1 outputDir = ',outputDir
-    ## print '2 outputFiles = ',outputFiles
-    ## print '3 obsHistID = ',obsHistID
-    ## print '4 sensorID = ',sensorID
-    ## print '5 filterID = ',filterID
-    ## print '5a filter = ',filter
-    ## print '6 taskVersionPath = ',taskVersionPath
-    ## print '7 streamPath = ',streamPath
-    ## print '8 task = ',task
-    ## print '8.5 taskVersion = ',taskVersion
-    sys.stdout.flush()
-
-
-
-    ## DataCatalog path for data products
-    ## /LSST-DESC/DC2/<taskName>/<obsHistID>/<filename>
-    ## where "<obsHistID>" is a dataCatalog "group"
-    datacatRoot = os.path.join('/LSST-DESC/DC2',task)
-    ## print '9 datacatRoot = ',datacatRoot
-
-    ## file types:  lsst_e (fits.gz), lsst_a (fits.gz), centroid (txt), other?
-
-    ## MetaData to store
-    ##  
+    ## Put metadata into a hashmap
     md = HashMap()
-    md.put('nObsHistID',obsHistID)
-    md.put('sensorID',sensorID)
-    md.put('nFilterID',filterID)
-    md.put('filter',filter)
-    md.put('streamPath',streamPath)
-    md.put('task',taskVersion)
+    md.put('nSensors',int(totSensors))
+    md.put('sensorList',tSensorList)
 
+    ## Store metadata into the dataCatalog
+
+    ##### As of 6/26/2018, this next line fails with odd Oracle error.
+    ##### Brian investigating.  In meantime, comment out
+    #datacatalog.addDatasetGroupMetaData(datacatalog.getDatasetGroup(dataCatPath),md)
     
-    ## Register dataset
-
-    site = 'NERSC'
-    group = str(obsHistID)
-    outList = outputFiles.split(',')
-    if debug:print 'outList = ',outList
-    if len(outList) > 0:
-        for outFile in outList:
-            outFileFull = os.path.join(outputDir,outFile)
-            fn = os.path.basename(outFile)
-            if debug:print 'fn = ',fn
-            if outFile.endswith('.fits'):
-                fType = 'fits'
-            elif outFile.endswith('fits.gz'):
-                fType = 'fits.gz'
-            elif outFile.endswith('.txt'):
-                fType = 'txt'
-            else:
-                fType = 'dat'
-                pass
-            if outFile.startswith('lsst_e'):
-                dType = 'PHOSIM_E'
-            elif outFile.startswith('lsst_a'):
-                dType = 'PHOSIM_A'
-            elif outFile.startswith('centroid'):
-                dType = 'PHOSIM_C'
-            else:
-                dType = 'PHOSIM'
-                pass
-
-            print '====> Registration: ',fn,'\n filetype and datatype: ',fType,', ',dType,'\n datacat location: ',datacatRoot,':',group,'\n site location: ',site,':',outFileFull
-
-            ds = datacatalog.newDataset(fn,fType,dType,datacatRoot,group,site,outFileFull)
-            datacatalog.registerDataset(ds,md,True)
-            pass
-        pass
-    
-    ## Done.
     return 0
+
+
 
 
 if __name__ == "__main__":
