@@ -33,7 +33,10 @@ export PHOSIM_IC_GENERATOR='generateInstCat.py'
 #export PHOSIM_IC_SETUP='/global/common/software/lsst/cori-haswell-gcc/Run1.1p_setup.bash'
 
 # Run 1.2p setup
-export PHOSIM_IC_SETUP='/global/common/software/lsst/cori-haswell-gcc/Run1.2p_setup.bash'
+#export PHOSIM_IC_SETUP='/global/common/software/lsst/cori-haswell-gcc/Run1.2p_setup.bash'
+
+# Run 2.0p setup
+export PHOSIM_IC_SETUP='/global/common/software/lsst/cori-haswell-gcc/Run2.0p_setup_test.bash'
 
 ## [PRODUCTION] Dynamic Instance Catalogs...
 #
@@ -90,3 +93,9 @@ echo
 echo
 
 
+log_separator () {
+    echo 
+    echo '==============================================================='
+    echo '==============================================================='
+    echo
+}

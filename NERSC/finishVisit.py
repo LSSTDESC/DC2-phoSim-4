@@ -40,56 +40,6 @@ if os.getenv('PHOSIM_SCR_CLEANUP') == '1':
 
 #############################################################################
 
-## Reformat phoSim generated FITS image files
-
-"""
-To run the repackaging script, you'll need a copy of these two repos:
-
-https://github.com/lsst/obs_lsstCam
-
-https://github.com/LSSTDESC/desc_sim_utils
-
-From bash, to create the runtime environment do
-
-$ source /global/common/software/lsst/cori-haswell-gcc/stack/lsstsw/setup.sh
-$ source /global/common/software/lsst/cori-haswell-gcc/stack/lsstsw/weekly/loadLSST.bash
-$ setup lsst_distrib
-$ setup -r <path_to>/desc_sim_utils
-$ setup -r <path_to>/obs_lsstCam
-
-For production, we'll have a setup script that you can use that will
-setup everything with the desired package versions, but the master of
-desc_sim_utils and obs_lsstCam should work for now.
-
-If you have a directory with the lsst_a* files for a given visit, then
-you can run the phosim_repackager.py script as per the help message:
-
-$ phosim_repackager.py --help
-usage: phosim_repackager.py [-h] [--out_dir OUT_DIR] [--verbose] visit_dir
-
-Repackager for phosim amp files
-
-positional arguments:
-  visit_dir          visit directory
-
-optional arguments:
-  -h, --help         show this help message and exit
-  --out_dir OUT_DIR  output directory
-  --verbose          print time to process the data each sensor
-"""
-
-
-
-
-#############################################################################
-
-## Ingest (reformatted) phoSim image files for DM use
-
-
-
-
-#############################################################################
-
 ## Done.
 log.info('All done.')
 sys.exit(rc)
