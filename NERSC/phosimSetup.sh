@@ -33,15 +33,16 @@ echo "Running on Cori-"$partition", host "$host
 ## Code pointers
 arch=cori-${partition}-${compiler}
 export PHOSIM_ROOT=/global/common/software/lsst/${arch}/phosim/${version}
-export DMTCP_ROOT=/global/common/cori/contrib/lsst/dmtcp/2.4.5
+
+## dmtcp checkpointing (use 'module load dmtcp' rather than homebrew)
+#export DMTCP_ROOT=/global/common/cori/contrib/lsst/dmtcp/2.4.5
+#export PATH=$DMTCP_ROOT/bin:$PATH
+#export MANPATH=$DMTCP_ROOT/share/man:$MANPATH
+
 
 
 ## Add dummy condor_submit_dag
 export PATH=${DC2_ROOT}/bin:$PATH
-
-## Add DMTCP to (MAN)PATH
-export PATH=$DMTCP_ROOT/bin:$PATH
-export MANPATH=$DMTCP_ROOT/share/man:$MANPATH
 
 ## Module shenanigans on cori to run phoSim and DMTCP (checkpointing)
 ## By default, logging into Haswell or KNL will set up "Intel"
@@ -56,5 +57,6 @@ if [ $compiler == 'gcc' ]; then
     export CC=gcc
 fi
 
+## Note that phoSim requires python v2 rather than v3
 module load python/2.7-anaconda
 

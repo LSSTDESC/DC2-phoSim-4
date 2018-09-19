@@ -4,10 +4,6 @@
 ## General task configuration (for all steps)
 source ${DC2_CONFIGDIR}/config.sh
 
-## Env setup for DM-related activities
-
-### Location of needed utilities
-
 ## Dump environment variables for posterity
 echo "********************************************************************************"
 echo
@@ -20,7 +16,7 @@ date
 echo "--------------------------------------------------------------------"
 echo
 
-## First step: run pythonic part
+## Perform final steps for this visit
 ${DC2_CONFIGDIR}/finishVisit.py
 rc1=$?
 if [ $rc1 -ne 0 ]; then 

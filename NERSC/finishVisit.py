@@ -26,9 +26,14 @@ scrDir = os.path.join(os.getenv('PHOSIM_SCR_ROOT'),os.getenv('DC2_SIXDIGSTREAM')
 
 
 
-## Clean up $SCRATCH.  This directory accumulates instance catalogs
-## and bits of same, job submission files, parameter files, etc.  It
-## all adds up to several GB per visit
+
+#############################################################################
+
+## Clean up $SCRATCH.  
+##
+## This directory accumulates instance catalogs and bits of same, job
+## submission files, parameter files, etc.  It all adds up to several
+## GB per visit
 
 if os.getenv('PHOSIM_SCR_CLEANUP') == '1':
     log.info('Cleaning up $SCRATCH: '+scrDir)
