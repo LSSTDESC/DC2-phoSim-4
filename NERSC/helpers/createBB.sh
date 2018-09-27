@@ -6,4 +6,4 @@
 #SBATCH -N 1
 #SBATCH -C haswell
 #SBATCH -t 00:05:00
-#BB create_persistent name=Run2_0p capacity=1TB access_mode=striped type=scratch 
+#BB create_persistent name=Run20p capacity=50TB access_mode=striped type=scratch 
