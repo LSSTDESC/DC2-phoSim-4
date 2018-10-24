@@ -42,7 +42,8 @@ def getVisit(stream, visitFile):
     print("     visit file contains ",len(vList)," visits.")
 
     # Select visit number (obsHistID) index by stream #
-    obsHistID = vList[stream].split()[0]
+    #              ... creating an 8-digit string with leading zeros
+    obsHistID = vList[stream].split()[0].zfill(8)
     print("     stream ",stream,' corresponds to visit (obsHistID) = ',obsHistID)
     print("=================================================\n")
     # Return obsHistID

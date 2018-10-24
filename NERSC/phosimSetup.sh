@@ -7,7 +7,8 @@
 #version=v3.7.8   # 23 Jan 2018
 #version=v3.7.9   # 30 Mar 2018
 #version=v3.7.15  # 19 Jun 2018
-version=v3.7.16   # 27 Aug 2018
+#version=v3.7.16   # 27 Aug 2018
+version=v3.7.16fat   # 15 Oct 2018 (local mod: increase array sizes for large catalogs)
 
 ## Select compiler used to build phoSim
 #compiler=gcc
@@ -30,9 +31,18 @@ fi
 
 echo "Running on Cori-"$partition", host "$host
 
+
 ## Code pointers
-arch=cori-${partition}-${compiler}
-export PHOSIM_ROOT=/global/common/software/lsst/${arch}/phosim/${version}
+
+### Check of BurstBuffer is available and primed
+if [[ -d "$BBROOT" ]]; then
+    export PHOSIM_ROOT=$BBDIR/software/phosim/${version}
+else
+    arch=cori-${partition}-${compiler}
+    export PHOSIM_ROOT=/global/common/software/lsst/${arch}/phosim/${version}
+fi
+
+
 
 ## dmtcp checkpointing (use 'module load dmtcp' rather than homebrew)
 #export DMTCP_ROOT=/global/common/cori/contrib/lsst/dmtcp/2.4.5

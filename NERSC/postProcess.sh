@@ -25,33 +25,29 @@ echo
 
 ## Reformat phoSim generated FITS image files
 
-################# These two repos are **TEMPORARY** for task development
-export DMX_SIM_UTILS=/global/projecta/projectdirs/lsst/production/DC2/TGtemp/desc_sim_utils
-export DMX_LSSTCAM=/global/projecta/projectdirs/lsst/production/DC2/TGtemp/obs_lsstCam
-################# These two repos are **TEMPORARY** for task development
-echo 'DMX_SIM_UTILS='$DMX_SIM_UTILS
-echo 'DMX_LSSTCAM='$DMX_LSSTCAM
 
-echo 'Setup stack'
-source /global/common/software/lsst/cori-haswell-gcc/stack/lsstsw/setup.sh
-echo 'loadLSST'
-source /global/common/software/lsst/cori-haswell-gcc/stack/lsstsw/weekly/loadLSST.bash
-echo 'setup lsst_distrib'
-setup lsst_distrib
-echo 'setup sim_utils'
-setup -r ${DMX_SIM_UTILS}
-echo 'setup lsstcam'
-setup -r ${DMX_LSSTCAM} 
+echo 'SETUP for phoSim amplifier FITS file repackager'
+echo
 
-log_separator
+
+################# These three repos are **TEMPORARY** for task development
+################# These three repos are **TEMPORARY** for task development
+export DMX_DESC_SIM_UTILS=/global/projecta/projectdirs/lsst/production/DC2/TGtemp/desc_sim_utils
+export DMX_OBS_LSSTCAM=/global/projecta/projectdirs/lsst/production/DC2/TGtemp/obs_lsstCam
+export DMX_IMSIM=/global/projecta/projectdirs/lsst/production/DC2/TGtemp/imSim
+################# These three repos are **TEMPORARY** for task development
+################# These three repos are **TEMPORARY** for task development
+
+
+echo 'DMX_DESC_SIM_UTILS = '$DMX_DESC_SIM_UTILS
+echo 'DMX_OBS_LSSTCAM = '$DMX_OBS_LSSTCAM
+echo 'DMX_IMSIM = '$DMX_IMSIM
 
 ## Define input (phoSim amplifier FITS files) and output
-input=${DC2_ROOT}/output/${DC2_SIXDIGSTREAM}
-output=${DC2_ROOT}/ready4ingest/${DC2_SIXDIGSTREAM}
-
+export input=${DC2_ROOT}/output/${DC2_SIXDIGSTREAM}
+export output=${DC2_ROOT}/ready4ingest/${DC2_SIXDIGSTREAM}
 echo 'input = '$input
 echo 'output= '$output
-
 
 ## Create directory to hold tweaked files
 if [ ! -d $output ]; then
@@ -59,25 +55,75 @@ if [ ! -d $output ]; then
     mkdir -pv $output
 fi
 
-cmd="phosim_repackager.py --verbose --out_dir $output $input"
-date
-echo $cmd
-eval $cmd
 
-rc1=$?
-if [ $rc1 -ne 0 ]; then 
-    echo "%FAIL: FITS header tweak, rc = "$rc1
-    date
-    exit 1
-fi
 
-## Compress all of the repackager output
-cmd="gzip ${output}"
+echo
+echo 'Start shifter'
+cmd0='/usr/bin/time -v shifter --image=lsstdesc/stack-sims:w_2018_35-sims_2_10_0-v2 -- '
+echo $cmd0
+eval $cmd0 <<EOF
+
+
+### TEST ONLY ###
+#export DC2_ROOT="./"
+#export DC2_SIGDIGSTREAM="000001"
+
+echo "DC2_ROOT = "$DC2_ROOT
+echo "DC2_SIXDIGSTREAM = "$DC2_SIXDIGSTREAM
+
+echo
+echo 'Setup stack'
+source /opt/lsst/software/stack/loadLSST.bash
+
+echo
+echo 'loadLSST'
+source /opt/lsst/software/stack/loadLSST.bash
+
+echo
+echo 'setup lsst_distrib'
+setup lsst_distrib
+
+echo
+echo 'setup lsst_sims'
+setup lsst_sims
+
+echo
+echo 'setup desc_sim_utils'
+setup -r ${DMX_DESC_SIM_UTILS}
+
+echo
+echo 'setup obs_lsstcam'
+setup -r ${DMX_OBS_LSSTCAM}
+
+echo
+echo 'setup imSim'
+setup -r ${DMX_IMSIM}
+
+echo "Run phosim_repackager.py"
 date
-echo ${cmd}
-eval ${cmd}'/*'
+phosim_repackager.py --verbose --out_dir $output $input
+
+echo "Return from phosim_repackager.py = "$?
+
+EOF
+
+
+rc=$?
+echo
+echo "Return code from shifter = "$rc
+
+## Compress all of the repackager output (obsolete as of 10/21/2018)
+#cmd="gzip ${output}"
+#date
+#echo ${cmd}
+#eval ${cmd}'/*'
 
 #############################################################################
+
+echo
+echo "phosim_repackager complete"
+date
+
 
 log_separator
 
@@ -88,6 +134,6 @@ log_separator
 
 ## ingestDriver.py [YourIngestDirectoryWithMapperFile] @pathtoyourFileList.txt --cores 8 --mode link -c allowError=True register.ignore=True
 
-date
+#date
 
 exit
