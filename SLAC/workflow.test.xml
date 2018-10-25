@@ -53,11 +53,11 @@
 
 
 	    <!-- MAXCPU time in seconds - used for scheduling but not enforced by pilot jobs -->
-            <var name="MAXCPU_SETUP">4200</var>  <!-- This amount of time is needed if generating instanceCatalog -->
+            <var name="MAXCPU_SETUP">4200</var>       <!-- This amount of time is needed if generating instanceCatalog -->
             <var name="MAXCPU_TRIM">600</var>
-            <var name="MAXCPU_RAYTRACE">12600</var>
+            <var name="MAXCPU_RAYTRACE">12600</var>   <!-- 3.5 hours is enough to get started... -->
             <var name="MAXCPU_E2ADC">1800</var>   
-            <var name="MAXCPU_MISC">200</var>   
+            <var name="MAXCPU_MISC">1500</var>        <!-- ~20min for full focal plane postProcess -->
             <!-- Note that native SLURM times are expressed as: mm, mm:ss, hh:mm:ss, or dd-hh:mm:ss -->
 
 	    <!-- MAXTIME is wall clock time in seconds - used for scheduling but not enforced by pilot jobs -->
