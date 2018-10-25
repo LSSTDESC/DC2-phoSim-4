@@ -21,7 +21,7 @@ sys.path.insert(1,os.getenv('DC2_CONFIGDIR'))
 #############################################################################
 
 ## Copy phoSim input files to NERSC project area
-scrDir = os.path.join(os.getenv('PHOSIM_SCR_ROOT'),os.getenv('DC2_SIXDIGSTREAM'))
+scrDir = os.path.join(os.getenv('PHOSIM_SCR_ROOT'),os.getenv('DC2_SEVENDIGSTREAM'))
 
 
 

@@ -74,8 +74,8 @@ for snap in range(0,int(nsnaps)):
 
     ## Copy data products from $SCRATCH to project area
     log.info('Copy data products from $SCRATCH to project area')
-    sixdigits = "%06d" % int(os.getenv('DC2_TOPLEVEL6'))
-    workDir = os.path.join(os.getenv('PHOSIM_SCR_ROOT'),sixdigits,'work')
+    sevendigits = "%07d" % int(os.getenv('DC2_TOPLEVEL7'))
+    workDir = os.path.join(os.getenv('PHOSIM_SCR_ROOT'),sevendigits,'work')
     print('workDir = ',workDir)
     outDir = os.getenv('DC2_PHOSIMOUT')
     print('outDir = ',outDir)

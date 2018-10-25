@@ -33,8 +33,8 @@ def runPhosimStep(step,snap=0):
     subFileName += '.submit'
     print('subFileName = ', subFileName)
     
-    sixdigits = "%06d" % int(os.getenv('DC2_TOPLEVEL6'))
-    workDir = os.path.join(os.getenv('PHOSIM_SCR_ROOT'),sixdigits,'work')
+    sevendigits = "%06d" % int(os.getenv('DC2_TOPLEVEL7'))
+    workDir = os.path.join(os.getenv('PHOSIM_SCR_ROOT'),sevendigits,'work')
     print('workDir = ',workDir)
 
     sf = os.path.join(workDir,subFileName)

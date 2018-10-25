@@ -29,10 +29,10 @@ sys.path.insert(1,os.getenv('DC2_CONFIGDIR'))
 from utils import *
 
 ## Say hello
-sstream = os.getenv('DC2_SIXDIGSTREAM')
+sstream = os.getenv('DC2_SEVENDIGSTREAM')
 log.info("Starting stream %s",sstream)
-## Preserve 6-digit top-level stream number
-cmd = 'pipelineSet DC2_TOPLEVEL6 '+sstream
+## Preserve 7-digit top-level stream number
+cmd = 'pipelineSet DC2_TOPLEVEL7 '+sstream
 rc = os.system(cmd)
 if rc != 0 :
     log.error("Unable to set pipeline variable")
@@ -56,7 +56,7 @@ log.info('Prepare $SCRATCH space for phoSim')
 ## Directory structure: $DC2_ROOT/<output>/<stream>/{work,output}
 filePermissions = int(os.getenv("filePermissions"),8) ## Octal file permissions
 archivesDirName = 'archives'
-outDir = os.path.join(os.environ['DC2_OUTPUT'],os.environ['DC2_SIXDIGSTREAM'])
+outDir = os.path.join(os.environ['DC2_OUTPUT'],os.environ['DC2_SEVENDIGSTREAM'])
 
 #print 'filePermissions = ',filePermissions,' (or ',oct(filePermissions), ' octal)'
 
@@ -126,7 +126,7 @@ if rc != 0 :
 
 
 ## Check that SCRATCH (staging) area is clean
-scrDir = os.path.join(os.getenv('PHOSIM_SCR_ROOT'),os.getenv('DC2_SIXDIGSTREAM'))
+scrDir = os.path.join(os.getenv('PHOSIM_SCR_ROOT'),os.getenv('DC2_SEVENDIGSTREAM'))
 log.info('Checking phoSim scratch/staging space: '+scrDir)
 if os.access(scrDir,os.F_OK):
     log.info('phoSim scratch/staging directory already exists.  Cleaning up...')

@@ -44,8 +44,8 @@ echo 'DMX_OBS_LSSTCAM = '$DMX_OBS_LSSTCAM
 echo 'DMX_IMSIM = '$DMX_IMSIM
 
 ## Define input (phoSim amplifier FITS files) and output
-export input=${DC2_ROOT}/output/${DC2_SIXDIGSTREAM}
-export output=${DC2_ROOT}/ready4ingest/${DC2_SIXDIGSTREAM}
+export input=${DC2_ROOT}/output/${DC2_SEVENDIGSTREAM}
+export output=${DC2_ROOT}/ready4ingest/${DC2_SEVENDIGSTREAM}
 echo 'input = '$input
 echo 'output= '$output
 
@@ -63,13 +63,8 @@ cmd0='/usr/bin/time -v shifter --image=lsstdesc/stack-sims:w_2018_35-sims_2_10_0
 echo $cmd0
 eval $cmd0 <<EOF
 
-
-### TEST ONLY ###
-#export DC2_ROOT="./"
-#export DC2_SIGDIGSTREAM="000001"
-
 echo "DC2_ROOT = "$DC2_ROOT
-echo "DC2_SIXDIGSTREAM = "$DC2_SIXDIGSTREAM
+echo "DC2_SEVENDIGSTREAM = "$DC2_SEVENDIGSTREAM
 
 echo
 echo 'Setup stack'

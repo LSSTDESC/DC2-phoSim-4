@@ -4,7 +4,7 @@
           xs:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline 
           http://srs.slac.stanford.edu/Pipeline-II/schemas/2.1/pipeline.xsd">
 
-    <task name="DC2-R2-0p-test-r" type="LSST" version="0.150">
+    <task name="DC2-R2-0p-test-r" type="LSST" version="0.151">
         <notation>Workflow test for DESC DC2 phoSim</notation> 
 
         <variables>
@@ -72,7 +72,7 @@
 
             <var name="DC2_NTHREADS">54</var>         <!-- number of threads requested for raytrace -->
 	    <var name="DC2_CKPT_ENABLE">TRUE</var>    <!-- enable raytrace checkpointing -->
-            <var name="DC2_SIXDIGSTREAM">${format(pipeline.stream,&quot;%06d&quot;)}</var>
+            <var name="DC2_SEVENDIGSTREAM">${format(pipeline.stream,&quot;%07d&quot;)}</var>
 
             <!--  -->
             <var name="MAXCPU">100</var> <!-- wall clock time limit in seconds-->

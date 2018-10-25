@@ -43,8 +43,8 @@ log.info('Extract sensorIDs from .par file')
 parFileName = 'trim_'+os.getenv('DC2_OBSHISTID')+'_'+os.getenv('PIPELINE_STREAM')+'.pars'
 print('parFileName = ',parFileName)
 
-sixdigits = "%06d" % int(os.getenv('DC2_TOPLEVEL6'))
-workDir = os.path.join(os.getenv('PHOSIM_SCR_ROOT'),sixdigits,'work')
+sevendigits = "%07d" % int(os.getenv('DC2_TOPLEVEL7'))
+workDir = os.path.join(os.getenv('PHOSIM_SCR_ROOT'),sevendigits,'work')
 print('workDir = ',workDir)
 
 pf = os.path.join(workDir,parFileName)
