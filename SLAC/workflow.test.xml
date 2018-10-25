@@ -70,7 +70,8 @@
             <var name="MAXMEM_MISC">3000000</var>
 	    <!-- Note that SLURM units are MB -->
 
-            <var name="DC2_NTHREADS">54</var>         <!-- number of threads requested for raytrace -->
+            <var name="DC2_CAT_SUBPROCS">10</var>     <!-- num subprocesses for cancel_knots in instanceCatalog -->
+	    <var name="DC2_NTHREADS">54</var>         <!-- number of threads requested for raytrace -->
 	    <var name="DC2_CKPT_ENABLE">TRUE</var>    <!-- enable raytrace checkpointing -->
             <var name="DC2_SEVENDIGSTREAM">${format(pipeline.stream,&quot;%07d&quot;)}</var>
 
